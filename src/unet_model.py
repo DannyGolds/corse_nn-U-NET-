@@ -77,7 +77,7 @@ def build_unet(input_shape=(256, 256, 3)):
     model = models.Model(inputs, outputs, name="U-Net_Forensics_Engine")
     
     model.compile(
-        optimizer=tf.keras.optimizers.Adam(learning_rate=3e-5),
+        optimizer=tf.keras.optimizers.AdamW(learning_rate=1e-4, weight_decay=1e-4),
         loss=dice_focal_loss(gamma=2.0, alpha=0.25), 
         metrics=['accuracy', dice_coefficient, iou_metric, dice_loss]
     )

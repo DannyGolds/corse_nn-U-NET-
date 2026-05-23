@@ -1,0 +1,2 @@
+Epoch 30/30
+58/58 ────────────────────────────── 0s 42ms/step - loss: 0.8239 - accuracy: 0.8585 - dice_coefficient: 0.2475 - dice_loss: 0.7525 - iou_metric: 0.1428 - val_loss: 0.9251 - val_accuracy: 0.7965 - val_dice_coefficient: 0.2242 - val_dice_loss: 0.7758 - val_iou_metric: 0.1284 - learning_rate: 3.75e-06

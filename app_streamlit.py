@@ -144,7 +144,7 @@ if uploaded_file is not None:
         st.subheader("📊 Экспертное заключение системы:")
 
         # Выносим вердикт на основе порога площади (задаем, например, 2.0%)
-        AREA_THRESHOLD_PCT = 15.0
+        AREA_THRESHOLD_PCT = 10.0
 
         if forgery_percentage >= AREA_THRESHOLD_PCT:
             st.error(

@@ -1,0 +1,6 @@
+Epoch 28/30
+58/58 ────────────────────────────── 0s 42ms/step - loss: 0.8259 - accuracy: 0.8573 - dice_coefficient: 0.2464 - dice_loss: 0.7536 - iou_metric: 0.1419 - val_loss: 0.8912 - val_accuracy: 0.8191 - val_dice_coefficient: 0.2163 - val_dice_loss: 0.7837 - val_iou_metric: 0.1232 - learning_rate: 3.75e-06
+Epoch 29/30
+58/58 ────────────────────────────── 0s 42ms/step - loss: 0.8230 - accuracy: 0.8600 - dice_coefficient: 0.2490 - dice_loss: 0.7510 - iou_metric: 0.1436 - val_loss: 0.9998 - val_accuracy: 0.7766 - val_dice_coefficient: 0.2234 - val_dice_loss: 0.7766 - val_iou_metric: 0.1281 - learning_rate: 3.75e-06
+Epoch 30/30
+58/58 ────────────────────────────── 0s 42ms/step - loss: 0.8239 - accuracy: 0.8585 - dice_coefficient: 0.2475 - dice_loss: 0.7525 - iou_metric: 0.1428 - val_loss: 0.9251 - val_accuracy: 0.7965 - val_dice_coefficient: 0.2242 - val_dice_loss: 0.7758 - val_iou_metric: 0.1284 - learning_rate: 3.75e-06
