@@ -7,7 +7,7 @@ Install python 3.12, but not the latest version! If it is not installed
 Download the zip or clone it to your working directory.
 Go to your directory and open terminal here.
 Write down the python -mv command.venv
-Next, write .\.venv\Scripts\activate
+Next, write .\\.venv\Scripts\activate
 Enter the pip install -r command.\requirements.txt
 
 Make sure that your dependencies have been installed.
