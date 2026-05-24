@@ -10,12 +10,10 @@ import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from utils.img_processing import compute_ela
-from utils.metrics import iou_metric, dice_coefficient, dice_focal_loss
 
-# ========================================================
-# 🔑 ЗАГРУЗКА МОДЕЛИ С КЭШИРОВАНИЕМ (чтобы приложение не тупило)
-# ========================================================
-@st.cache_resource # Твой стримлитовский кэш
+
+# Загрузка модели с кэшированием.
+@st.cache_resource
 def load_forensics_model():
     model_path = "./models/best_unet_forensics.keras"
     
@@ -25,16 +23,14 @@ def load_forensics_model():
 )
     return model
 
-# ========================================================
-# 🎨 НАСТРОЙКА ИНТЕРФЕЙСА STREAMLIT
-# ========================================================
+#Настройка инфтерфейса Streamlit
 st.set_page_config(
     page_title="Photo Forensics Neural Engine",
     page_icon="🛡️",
     layout="wide"
 )
 
-st.title("🛡️ Photo Forensics Neural Engine (U-Net + ELA)")
+st.title("Детекция локальных манипуляций на изображениях с помощью U-Net и ELA")
 st.write(
     "Данный модуль предназначен для попиксельного обнаружения областей локальных манипуляций "
     "(сплайсинг, ретушь, копирование-вставка) на цифровых изображениях с использованием анализа уровня ошибок сжатия."
@@ -43,25 +39,24 @@ st.write(
 st.markdown("---")
 
 # Загружаем модель
-with st.spinner("🧠 Загрузка нейросетевого движка U-Net..."):
+with st.spinner("Загрузка нейросетевого движка U-Net..."):
     model = load_forensics_model()
 
 if model is None:
-    st.error("🚨 Файл модели `best_unet_forensics.keras` не найден в папке `models/`!")
-    st.info("Пожалуйста, перенесите обученные веса с Google Диска в локальную папку проекта `models/` рядом с этим скриптом.")
+    st.error("Файл модели `best_unet_forensics.keras` не найден в папке `models/`!")
     st.stop()
 
 # Создаем интерфейс в два столбца: загрузка и настройки
 col1, col2 = st.columns([1, 2])
 
 with col1:
-    st.subheader("📥 Исходные данные")
+    st.subheader("Исходные данные")
     uploaded_file = st.file_uploader(
         "Выберите изображение для криминалистического анализа...", 
         type=["jpg", "jpeg", "png"]
     )
     
-    st.subheader("⚙️ Параметры детектора")
+    st.subheader("Параметры детектора")
     ela_quality = st.slider("Качество повторного сжатия (JPEG Quality)", 50, 100, 90)
     ela_scale = st.slider("Коэффициент усиления аномалий (Scale)", 5, 50, 15)
     detection_threshold = st.slider("Порог уверенности сети (Threshold)", 0.1, 0.9, 0.5, step=0.05)
@@ -77,12 +72,12 @@ if uploaded_file is not None:
         image = image.convert("RGB")
 
     image.save(temp_input_path, "JPEG", quality=100)
-    
+    AREA_THRESHOLD_PCT = 10.0
     with col2:
-        st.subheader("🔍 Результаты криминалистического анализа")
+        st.subheader("Результаты криминалистического анализа")
         
         # Индикатор прогресса
-        with st.spinner("🕒 Вычисление ELA и инференс нейросети..."):
+        with st.spinner("Вычисление ELA и инференс нейросети..."):
             try:
                 # 1. Считаем ELA-снимок по нашей исправленной логике
                 ela_res = compute_ela(temp_input_path, quality=ela_quality, scale=ela_scale, target_size=(256, 256))
@@ -99,15 +94,11 @@ if uploaded_file is not None:
                 # Очищаем за собой временный файл
                 if os.path.exists(temp_input_path):
                     os.remove(temp_input_path)
-                    
-                    # ========================================================
-                # 🛡️ УМНАЯ ПОСТОБРАБОТКА МАСКИ И ВЫНЕСЕНИЕ ВЕРДИКТА
-                # ========================================================
                 
-                # Применяем порог уверенности сети
+                #Применение порога уверенности сети
                 pred_mask = (pred_raw.squeeze() > detection_threshold).astype(np.uint8) * 255
                 
-                # Морфологическая фильтрация (убираем мелкую "сыпь" и связываем крупные объекты)
+                # Морфологическая фильтрация
                 kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
                 # Сначала opening (убирает изолированные точки), потом closing (затягивает дыры внутри маски)
                 processed_mask = cv2.morphologyEx(pred_mask, cv2.MORPH_OPEN, kernel)
@@ -118,7 +109,7 @@ if uploaded_file is not None:
                 total_pixels = processed_mask.size
                 forgery_percentage = (total_forged_pixels / total_pixels) * 100
                 
-                # Очищаем за собой временный файл
+                # Очистка временного файла после обработки
                 if os.path.exists(temp_input_path):
                     os.remove(temp_input_path)
             
@@ -126,7 +117,7 @@ if uploaded_file is not None:
                 st.error(f"Ошибка при обработке файла: {e}")
                 st.stop()
 
-        # Отображаем результаты в три колонки для наглядного сравнения
+        # Отображение результатов в три колонки для наглядного сравнения
         res_col1, res_col2, res_col3 = st.columns(3)
 
         with res_col1:
@@ -139,22 +130,16 @@ if uploaded_file is not None:
         with res_col3:
             # Выводим уже отфильтрованную, чистую маску
             st.image(processed_mask, caption="Локализованный след (Фильтрация шума)", use_container_width=True, channels="GRAY")
-            
-        st.markdown("---")
-        st.subheader("📊 Экспертное заключение системы:")
-
-        # Выносим вердикт на основе порога площади (задаем, например, 2.0%)
-        AREA_THRESHOLD_PCT = 10.0
-
+        st.subheader("Заключение системы:")
         if forgery_percentage >= AREA_THRESHOLD_PCT:
             st.error(
-                f"🚨 **ОБНАРУЖЕНА ЛОКАЛЬНАЯ МОДИФИКАЦИЯ ИЗОБРАЖЕНИЯ!** "
+                f"ОБНАРУЖЕНА ЛОКАЛЬНАЯ МОДИФИКАЦИЯ ИЗОБРАЖЕНИЯ!"
                 f"Найдено аномальное изменение структуры пикселей на площади {forgery_percentage:.2f}% от всего кадра. "
                 f"Выделенная область выходит за рамки погрешности естественного сжатия JPEG."
             )
         else:
             st.success(
-                f"✅ **ПРИЗНАКОВ НАПРАВЛЕННОГО ФОТОМОНТАЖА НЕ ОБНАРУЖЕНО.** "
+                f"ПРИЗНАКОВ НАПРАВЛЕННОГО ФОТОМОНТАЖА НЕ ОБНАРУЖЕНО."
                 f"Обнаруженные микроаномалии составляют всего {forgery_percentage:.2f}% кадра, "
                 f"что укладывается в допустимый порог естественного шума контрастности ({AREA_THRESHOLD_PCT}%). "
                 f"Изображение признано целостным."

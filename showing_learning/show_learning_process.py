@@ -2,7 +2,7 @@ import pickle
 import matplotlib.pyplot as plt
 import os
 
-pickle_path = r"C:\Course\corse_nn-U-NET-\models\history_unet.pkl"
+pickle_path = r"F:\course_u-net\models\history_unet.pkl"
 
 with open(pickle_path, 'rb') as f:
     history = pickle.load(f)
@@ -12,9 +12,7 @@ epochs = range(1, len(history['loss']) + 1)
 # Устанавливаем аккуратный академический стиль
 plt.style.use('seaborn-v0_8-whitegrid')
 
-# =====================================================================
 # Окно 1: Коллаж 2х2 из основных метрик обучения и валидации
-# =====================================================================
 fig, axs = plt.subplots(2, 2, figsize=(16, 11))
 
 # 1. Функция потерь (Total Loss)
@@ -50,14 +48,12 @@ axs[1, 1].set_ylabel('Доля верных пикселей')
 axs[1, 1].legend()
 
 plt.tight_layout()
-main_plot_path = "./models/unet_training_metrics_grid.png"
+main_plot_path = "./static/unet_training_metrics_grid.png"
 plt.savefig(main_plot_path, dpi=300)
 print(f"Основной коллаж графиков сохранен как '{main_plot_path}'")
 
 
-# =====================================================================
 # Окно 2: График изменения Скорости Обучения (Learning Rate)
-# =====================================================================
 if 'learning_rate' in history:
     plt.figure(figsize=(8, 4))
     plt.plot(epochs, history['learning_rate'], 'g-p', label='Learning Rate', linewidth=2, markersize=4)

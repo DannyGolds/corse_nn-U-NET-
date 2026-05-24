@@ -26,7 +26,7 @@ def dice_focal_loss(gamma=2., alpha=0.25):
     а Dice Loss заставляет маску держать монолитную структуру.
     """
     def loss_fn(y_true, y_pred):
-        # Принудительно приводим маску к float32, чтобы Keras не ругался на типы данных
+        # Принудительно приводим маску к float32
         y_true_dt = tf.cast(y_true, tf.float32)
         y_pred_dt = tf.clip_by_value(y_pred, 1e-6, 1.0 - 1e-6) # Защита от log(0)
         

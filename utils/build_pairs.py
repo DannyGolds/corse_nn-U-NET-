@@ -2,8 +2,7 @@ import os
 
 def build_data_pairs(tp_dir, gt_dir):
     """
-    Сканирует директории и находит пары (манипуляция <-> маска groundtruth)
-    на основе вхождения имени подстроки.
+    Сканирует директории и находит пары (манипуляция - маска groundtruth) на основе вхождения имени подстроки.
     """
     # Проверяем существование папок
     if not os.path.exists(tp_dir) or not os.path.exists(gt_dir):

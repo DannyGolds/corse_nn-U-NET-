@@ -7,23 +7,23 @@ def compute_ela(image_path, quality=90, scale=15, target_size=(256, 256)):
     """
     Вычисляет Error Level Analysis (ELA) для изображения.
     """
-    # 1. Надежно читаем оригинальное изображение через OpenCV
+
     orig = cv2.imread(image_path)
     if orig is None:
         raise FileNotFoundError(f"Не удалось открыть изображение по пути: {image_path}")
         
-    # Приводим к нужному размеру ДО сохранения, чтобы не искажать сетку JPEG
+    #Приводим к нужному размеру до сохранения, чтобы не искажать сетку JPEG
     orig = cv2.resize(orig, target_size)
     orig = cv2.cvtColor(orig, cv2.COLOR_BGR2RGB)
 
-    # 2. Переводим в PIL, чтобы сохранить с точным качеством JPEG
+    #Перевод в PIL, чтобы сохранить с точным качеством JPEG
     pil_img = Image.fromarray(orig)
     
-    # Используем временный файл в локальной памяти Colab (это быстро)
+    #Использование временного файла в локальной памяти Colab
     tmp_path = "temp_ela.jpg"
     pil_img.save(tmp_path, 'JPEG', quality=quality)
 
-    # 3. Читаем временный JPEG обратно
+    #Читаем временный JPEG обратно
     compressed = cv2.imread(tmp_path)
     compressed = cv2.cvtColor(compressed, cv2.COLOR_BGR2RGB)
     
@@ -31,15 +31,15 @@ def compute_ela(image_path, quality=90, scale=15, target_size=(256, 256)):
     if os.path.exists(tmp_path):
         os.remove(tmp_path)
 
-    # 4. Считаем абсолютную разницу между оригиналом и сжатой копией
-    # Переводим в float32, чтобы избежать переполнения типов при вычитании
+    #Считаем абсолютную разницу между оригиналом и сжатой копией
+    #Переводим в float32, чтобы избежать переполнения типов при вычитании
     diff = np.abs(orig.astype(np.float32) - compressed.astype(np.float32))
     
-    # 5. Умножаем на scale, чтобы подсветить микро-аномалии форензики
+    #Умножаем на scale, чтобы подсветить микро-аномалии форензики
     ela_img = diff * scale
     
-    # 6. Жестко нормируем в диапазон [0.0, 1.0]
-    # Используем клиппинг, чтобы значения не улетали выше 255
+    #Жестко нормируем в диапазон [0.0, 1.0]
+    #Используем клиппинг, чтобы значения не улетали выше 255
     ela_img = np.clip(ela_img, 0, 255) / 255.0
     
     return ela_img
