@@ -1,8 +1,8 @@
 import pickle
 import matplotlib.pyplot as plt
+import os
 
-# Путь к твоему pickle-файлу
-pickle_path = "./models/history_unet_old.pkl"
+pickle_path = r"C:\Course\corse_nn-U-NET-\models\history_unet.pkl"
 
 with open(pickle_path, 'rb') as f:
     history = pickle.load(f)

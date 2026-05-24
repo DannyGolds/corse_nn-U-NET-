@@ -17,10 +17,10 @@ from utils.metrics import iou_metric, dice_coefficient, dice_focal_loss
 # ========================================================
 @st.cache_resource # Твой стримлитовский кэш
 def load_forensics_model():
-    model_path = "F:/course_u-net/models/best_unet_forensics.keras"
+    model_path = "./models/best_unet_forensics.keras"
     
     model = tf.keras.models.load_model(
-    "F:/course_u-net/models/best_unet_forensics.keras", 
+    "./models/best_unet_forensics.keras", 
     compile=False
 )
     return model
