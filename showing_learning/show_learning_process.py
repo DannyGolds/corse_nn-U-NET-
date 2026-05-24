@@ -48,7 +48,7 @@ axs[1, 1].set_ylabel('Доля верных пикселей')
 axs[1, 1].legend()
 
 plt.tight_layout()
-main_plot_path = "./static/unet_training_metrics_grid.png"
+main_plot_path = "F:/course_u-net/showing_learning/static/unet_training_metrics_grid.png"
 plt.savefig(main_plot_path, dpi=300)
 print(f"Основной коллаж графиков сохранен как '{main_plot_path}'")
 
